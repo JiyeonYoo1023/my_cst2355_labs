@@ -30,23 +30,27 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var _counter = 0.0;
-  var myFontSize = 30.0;
+  var isChecked = false;
+  late TextEditingController _login;
+  late TextEditingController _passwd;
+  var imageSource = "images/question-mark.png";
 
-  void setNewValue(double value) {
-    setState(() {
-      _counter = value;
-      myFontSize = _counter;
-    });
+
+  @override
+  void initState() {
+    super.initState();
+    _login = TextEditingController();
+    _passwd = TextEditingController();
   }
-  void _incrementCounter() {
-    setState(() {
-      if(_counter < 99.0) {
-        _counter++;
-        myFontSize = _counter;
-      }
-    });
+
+  @override
+  void dispose() {
+    _login.dispose();
+    _passwd.dispose();
+    super.dispose();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -59,17 +63,43 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('You have pushed the button this many times:', style:TextStyle(fontSize:myFontSize)),
-            Text('$_counter', style:TextStyle(fontSize:myFontSize)),
-            Slider(value:_counter, onChanged:setNewValue, max:100.0, min:0.0)
+            TextField(controller: _login,
+                decoration: InputDecoration(
+                  hintText:"Login",
+                  border: OutlineInputBorder(),
+                )),
+            TextField(controller: _passwd,
+              decoration: InputDecoration(
+                hintText:"Password",
+                border: OutlineInputBorder(),
+                label: Text("Password"),
+              ), //obscureText:true,
+
+            ),
+
+            ElevatedButton(
+              onPressed: () {
+                var txt = _passwd.value.text;
+                setState(() {
+                  if (txt == "QWERTY123") {
+                    imageSource = "images/idea.png";
+                    Semantics( label: 'Light bulb Image',
+                        child: Image.asset(imageSource, width:300, height:300));
+                  }
+                  else if(txt != "ASDF") {
+                    imageSource = "images/stop.png";
+                    Semantics( label: "Stop Image",
+                        child: Image.asset(imageSource, width:300, height:300));
+                  }
+                });
+              },
+              child: Text("Login", style:TextStyle(fontSize:30)),
+
+            ),
+            Semantics( label: 'Question Mark Image', child: Image.asset(imageSource, width:300, height:300)),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
